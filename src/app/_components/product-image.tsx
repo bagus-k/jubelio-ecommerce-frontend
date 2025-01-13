@@ -1,19 +1,33 @@
+import { cn } from "@/lib/utils";
 import Image from "next/image";
 import { useState } from "react";
 
-const ProductImage = ({ src, alt }: { src: string; alt: string }) => {
+const ProductImage = ({
+  src,
+  alt,
+  className,
+}: {
+  src: string;
+  alt: string;
+  className?: string;
+}) => {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(false);
 
   return (
-    <div className="relative w-full h-[200px] bg-gray-100 rounded-md">
+    <div
+      className={cn(
+        "relative w-full h-[200px] bg-gray-100 rounded-md",
+        className
+      )}
+    >
       {isLoading && (
         <div className="absolute inset-0 flex items-center justify-center">
           <div className="h-8 w-8 animate-spin rounded-full border-4 border-solid border-primary border-r-transparent" />
         </div>
       )}
 
-      {error ? (
+      {error || src === "" ? (
         <div className="absolute inset-0 flex items-center justify-center bg-gray-100">
           <span className="text-gray-400">Image unavailable</span>
         </div>

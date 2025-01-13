@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Dialog,
   DialogContent,
@@ -6,40 +6,102 @@ import {
   DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
-} from "./ui/dialog";
-import { Form, FormControl, FormField, FormItem, FormMessage } from "./ui/form";
-import { Label } from "./ui/label";
-import { Input } from "./ui/input";
-import { Textarea } from "./ui/textarea";
-import { Button } from "./ui/button";
+} from "../../components/ui/dialog";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormMessage,
+} from "../../components/ui/form";
+import { Label } from "../../components/ui/label";
+import { Input } from "../../components/ui/input";
+import { Textarea } from "../../components/ui/textarea";
+import { Button } from "../../components/ui/button";
 import { z } from "zod";
 import { productSchema } from "@/app/schema/schemas";
 import { UseFormReturn } from "react-hook-form";
+import { Product } from "@/app/store/product";
 
 interface ProductHandlerDialogProps {
   isDialogOpen: boolean;
   onCloseDialog: () => void;
   form: UseFormReturn<z.infer<typeof productSchema>>;
   onSubmit: (values: z.infer<typeof productSchema>) => void;
+  product?: Product;
+  title: string;
 }
 
-const ProductHandlerDialog: React.FC<ProductHandlerDialogProps> = ({
+const ProductHandlerDialog = ({
   isDialogOpen,
   onCloseDialog,
   form,
   onSubmit,
-}) => {
+  product,
+  title = "Add Product",
+}: ProductHandlerDialogProps) => {
+  useEffect(() => {
+    if (product?.id !== 0) {
+      form.setValue("id", product?.id || 0);
+      form.setValue("title", product?.title || "");
+      form.setValue("sku", product?.sku || "");
+      form.setValue("description", product?.description || "");
+      form.setValue("image", product?.image || "");
+      form.setValue("price", Number(product?.price) || 0);
+      form.setValue("stock", Number(product?.stock) || 0);
+    }
+  }, [product, form]);
+
+  const handleInputPrice = ({
+    value,
+    onChange,
+  }: {
+    value: string;
+    onChange: (formattedValue: number | string) => void;
+  }) => {
+    value = value.replace(/[^0-9.]/g, "");
+
+    const dotCount = (value.match(/\./g) || []).length;
+    if (dotCount > 1) {
+      value = value.slice(0, value.lastIndexOf("."));
+    }
+
+    const decimalMatch = value.match(/^(\d*\.?\d{0,2})/);
+    value = decimalMatch ? decimalMatch[1] : value;
+
+    if (value.startsWith("0") && !value.startsWith("0.")) {
+      value = parseFloat(value).toString();
+    }
+
+    let parsedValue: number | string = value;
+
+    if (!value.endsWith(".")) {
+      parsedValue = value ? parseFloat(value) : 0;
+    }
+    onChange(parsedValue);
+  };
+
+  const handleInputStock = ({
+    value,
+    onChange,
+  }: {
+    value: string;
+    onChange: (formattedValue: number) => void;
+  }) => {
+    value = value.replace(/[^0-9]/g, "");
+
+    onChange(value ? parseInt(value) : 0);
+  };
+
   return (
     <Dialog open={isDialogOpen} onOpenChange={onCloseDialog}>
-      <DialogTrigger asChild>
-        <Button variant="default">Add Product</Button>
-      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Add Product</DialogTitle>
+          <DialogTitle>{title}</DialogTitle>
           <DialogDescription>
-            Add a new product by filling in the details below.
+            {title === "Add Product"
+              ? "Add a new product by filling in the details below."
+              : "Update product by filling in the details below."}
           </DialogDescription>
         </DialogHeader>
         <Form {...form}>
@@ -133,9 +195,12 @@ const ProductHandlerDialog: React.FC<ProductHandlerDialogProps> = ({
                         <Input
                           {...field}
                           placeholder="Product Price"
-                          type="number"
+                          type="text"
                           onChange={(e) =>
-                            field.onChange(parseFloat(e.target.value))
+                            handleInputPrice({
+                              value: e.target.value,
+                              onChange: field.onChange,
+                            })
                           }
                         />
                       </FormControl>
@@ -158,9 +223,12 @@ const ProductHandlerDialog: React.FC<ProductHandlerDialogProps> = ({
                         <Input
                           {...field}
                           placeholder="Product Stock"
-                          type="number"
+                          type="text"
                           onChange={(e) =>
-                            field.onChange(parseFloat(e.target.value))
+                            handleInputStock({
+                              value: e.target.value,
+                              onChange: field.onChange,
+                            })
                           }
                         />
                       </FormControl>
