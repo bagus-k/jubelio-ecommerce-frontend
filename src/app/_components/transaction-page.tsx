@@ -156,7 +156,7 @@ const TransactionPage = ({ activeTab }: { activeTab: string }) => {
   };
 
   return (
-    <div className="bg-white">
+    <div className="bg-white ">
       <div className="flex flex-row justify-between p-4 w-full gap-2">
         <div>
           <Input
@@ -171,93 +171,95 @@ const TransactionPage = ({ activeTab }: { activeTab: string }) => {
           Add Transaction
         </Button>
       </div>
-      <Table>
-        <TableCaption>A list of your recent transactions.</TableCaption>
-        <TableHeader>
-          <TableRow>
-            <TableHead>SKU</TableHead>
-            <TableHead>Qty</TableHead>
-            <TableHead>Amount</TableHead>
-            <TableHead className="text-right pr-16">Actions</TableHead>
-          </TableRow>
-        </TableHeader>
-        <TableBody>
-          {transactions.map((item) => {
-            const amount =
-              item.amount < 0
-                ? `-$${item.amount.toString().slice(1)}`
-                : `$${item.amount}`;
-            return (
-              <TableRow
-                key={item.id}
-                className={cn(
-                  "",
-                  item.amount < 0
-                    ? "bg-red-300 hover:bg-red-400"
-                    : item.amount > 0
-                    ? "bg-green-300 hover:bg-green-400"
-                    : "bg-white hover:bg-slate-200"
-                )}
-              >
-                <TableCell className="font-medium">{item.sku}</TableCell>
-                <TableCell>{item.qty}</TableCell>
-                <TableCell>{amount}</TableCell>
-                <TableCell className="text-right">
-                  <div className="flex flex-row-reverse gap-4">
-                    <Button
-                      variant="destructive"
-                      onClick={() => handleDelete({ item: item })}
-                    >
-                      Delete
-                    </Button>
-                    <Button
-                      variant={"secondary"}
-                      onClick={() => handleUpdate({ item: item })}
-                    >
-                      Update
-                    </Button>
-                  </div>
-                </TableCell>
-              </TableRow>
-            );
-          })}
-        </TableBody>
-        <TableFooter>
-          <TableRow>
-            <TableCell colSpan={4}>
-              <div className="flex justify-end items-center gap-3">
-                <Button
-                  variant="outline"
-                  disabled={currentPage === 1}
-                  onClick={() =>
-                    getTransactions({
-                      page: currentPage - 1,
-                      keyword: searchValue,
-                    })
-                  }
+      <div className="p-4 rounded-md">
+        <Table>
+          <TableCaption>A list of your recent transactions.</TableCaption>
+          <TableHeader>
+            <TableRow>
+              <TableHead>SKU</TableHead>
+              <TableHead>Qty</TableHead>
+              <TableHead>Amount</TableHead>
+              <TableHead className="text-right pr-16">Actions</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {transactions.map((item) => {
+              const amount =
+                item.amount < 0
+                  ? `-$${item.amount.toString().slice(1)}`
+                  : `$${item.amount}`;
+              return (
+                <TableRow
+                  key={item.id}
+                  className={cn(
+                    "",
+                    item.amount < 0
+                      ? "bg-red-300 hover:bg-red-400"
+                      : item.amount > 0
+                      ? "bg-green-300 hover:bg-green-400"
+                      : "bg-white hover:bg-slate-200"
+                  )}
                 >
-                  Previous
-                </Button>
-                <span>
-                  Page {currentPage} of {totalPage}
-                </span>
-                <Button
-                  variant="outline"
-                  disabled={currentPage === totalPage}
-                  onClick={() =>
-                    getTransactions({
-                      page: currentPage + 1,
-                      keyword: searchValue,
-                    })
-                  }
-                >
-                  Next
-                </Button>
-              </div>
-            </TableCell>
-          </TableRow>
-        </TableFooter>
-      </Table>
+                  <TableCell className="font-medium">{item.sku}</TableCell>
+                  <TableCell>{item.qty}</TableCell>
+                  <TableCell>{amount}</TableCell>
+                  <TableCell className="text-right">
+                    <div className="flex flex-row-reverse gap-4">
+                      <Button
+                        variant="destructive"
+                        onClick={() => handleDelete({ item: item })}
+                      >
+                        Delete
+                      </Button>
+                      <Button
+                        variant={"secondary"}
+                        onClick={() => handleUpdate({ item: item })}
+                      >
+                        Update
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+          <TableFooter>
+            <TableRow>
+              <TableCell colSpan={4}>
+                <div className="flex justify-end items-center gap-3">
+                  <Button
+                    variant="outline"
+                    disabled={currentPage === 1}
+                    onClick={() =>
+                      getTransactions({
+                        page: currentPage - 1,
+                        keyword: searchValue,
+                      })
+                    }
+                  >
+                    Previous
+                  </Button>
+                  <span>
+                    Page {currentPage} of {totalPage}
+                  </span>
+                  <Button
+                    variant="outline"
+                    disabled={currentPage === totalPage}
+                    onClick={() =>
+                      getTransactions({
+                        page: currentPage + 1,
+                        keyword: searchValue,
+                      })
+                    }
+                  >
+                    Next
+                  </Button>
+                </div>
+              </TableCell>
+            </TableRow>
+          </TableFooter>
+        </Table>
+      </div>
 
       <TransactionHandler
         title={dialogTitle}
