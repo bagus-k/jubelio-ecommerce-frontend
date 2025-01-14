@@ -34,11 +34,12 @@ const TransactionPage = ({ activeTab }: { activeTab: string }) => {
     deleteTransaction,
     currentPage,
     totalPage,
+    keyword,
   } = useTransactionStore();
   const [isDialogOpen, setDialogOpen] = useState(false);
   const [isDialogConfirmationOpen, setDialogConfirmationOpen] = useState(false);
   const [dialogTitle, setDialogTitle] = useState("Add Transaction");
-  const [searchValue, setSearchValue] = useState("");
+  const [searchValue, setSearchValue] = useState(keyword);
 
   const { toast } = useToast();
 
@@ -71,7 +72,7 @@ const TransactionPage = ({ activeTab }: { activeTab: string }) => {
         });
       } else {
         await updateTransaction(values);
-        await getTransactions({ page: 1, keyword: "" });
+        await getTransactions({ page: 1, keyword: keyword });
 
         toast({
           variant: "success",

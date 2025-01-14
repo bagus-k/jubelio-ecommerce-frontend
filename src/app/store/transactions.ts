@@ -23,6 +23,7 @@ export type TransactionHandler = {
   totalPage: number;
   limit: number;
   hasMorePage: boolean;
+  keyword: string;
 
   getTransactions: ({
     page,
@@ -31,7 +32,7 @@ export type TransactionHandler = {
     page: number;
     keyword: string;
   }) => Promise<void>;
-  getNextPage: () => Promise<void>;
+  getNextPage: ({ keyword }: { keyword?: string }) => Promise<void>;
   addTransaction: ({ qty, sku }: { sku: string; qty: number }) => Promise<void>;
   updateTransaction: ({
     id,
@@ -65,6 +66,7 @@ export const useTransactionStore = create<TransactionHandler>()((set, get) => ({
   limit: 10,
   totalPage: 1,
   hasMorePage: false,
+  keyword: "",
 
   getTransactions: async ({
     page,
@@ -73,7 +75,13 @@ export const useTransactionStore = create<TransactionHandler>()((set, get) => ({
     page: number;
     keyword: string;
   }) => {
-    set({ isLoading: true, error: null, currentPage: 1, transactions: [] });
+    set({
+      isLoading: true,
+      error: null,
+      currentPage: 1,
+      transactions: [],
+      keyword: keyword,
+    });
 
     const { limit } = get();
 
@@ -103,11 +111,11 @@ export const useTransactionStore = create<TransactionHandler>()((set, get) => ({
     }
   },
 
-  getNextPage: async () => {
-    const { currentPage, isLoading, limit, totalPage } = get();
+  getNextPage: async ({ keyword: keywordForm }: { keyword?: string }) => {
+    const { currentPage, isLoading, limit, totalPage, keyword } = get();
     if (isLoading) return;
 
-    set({ isLoading: true, error: null });
+    set({ isLoading: true, error: null, keyword: keywordForm });
     try {
       const hasMorePage = currentPage === totalPage ? false : true;
 
@@ -119,6 +127,7 @@ export const useTransactionStore = create<TransactionHandler>()((set, get) => ({
             params: {
               page: nextPage,
               limit: limit,
+              keyword: keyword ? keyword : "",
             },
           }
         );
@@ -157,7 +166,7 @@ export const useTransactionStore = create<TransactionHandler>()((set, get) => ({
   },
 
   updateTransaction: async ({ id, qty, sku }) => {
-    const { getTransactions, getDetailTransaction } = get();
+    const { getTransactions, getDetailTransaction, keyword } = get();
     const transaction = {
       qty: qty,
       sku: sku,
@@ -167,7 +176,7 @@ export const useTransactionStore = create<TransactionHandler>()((set, get) => ({
         `${config.app.api_base_url}/transactions/${id}`,
         transaction
       );
-      await getTransactions({ page: 1, keyword: "" });
+      await getTransactions({ page: 1, keyword: keyword });
       await getDetailTransaction({ id: id });
       return;
     } catch (error) {
@@ -207,10 +216,10 @@ export const useTransactionStore = create<TransactionHandler>()((set, get) => ({
   },
 
   deleteTransaction: async ({ id }) => {
-    const { getTransactions } = get();
+    const { getTransactions, keyword } = get();
     try {
       await axios.delete(`${config.app.api_base_url}/transactions/${id}`);
-      await getTransactions({ page: 1, keyword: "" });
+      await getTransactions({ page: 1, keyword: keyword });
       return;
     } catch (error) {
       console.error("Error adding transaction:", error);
