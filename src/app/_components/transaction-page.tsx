@@ -162,7 +162,7 @@ const TransactionPage = ({ activeTab }: { activeTab: string }) => {
         <div>
           <Input
             type="search"
-            placeholder="Search by name and sku"
+            placeholder="Search by sku"
             className="w-25"
             onChange={(e) => setSearchValue(e.target.value)}
             value={searchValue}
