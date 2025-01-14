@@ -61,7 +61,6 @@ const ProductPage = ({ activeTab }: { activeTab: string }) => {
       description: "",
       image: "",
       price: 0,
-      stock: 0,
     },
   });
 
@@ -226,8 +225,11 @@ const ProductPage = ({ activeTab }: { activeTab: string }) => {
             </CardHeader>
             <CardContent className="text-left">
               <CardTitle className="text-lg">{item.title}</CardTitle>
+              <CardDescription className="mt-[-5px]">
+                {item.sku}
+              </CardDescription>
               <CardDescription className="mt-2">${item.price}</CardDescription>
-              <CardDescription className="mt-1">
+              <CardDescription className="">
                 Only {item.stock} left in stock
               </CardDescription>
             </CardContent>

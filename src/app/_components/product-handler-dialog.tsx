@@ -48,7 +48,6 @@ const ProductHandlerDialog = ({
       form.setValue("description", product?.description || "");
       form.setValue("image", product?.image || "");
       form.setValue("price", Number(product?.price) || 0);
-      form.setValue("stock", Number(product?.stock) || 0);
     }
   }, [product, form]);
 
@@ -79,18 +78,6 @@ const ProductHandlerDialog = ({
       parsedValue = value ? parseFloat(value) : 0;
     }
     onChange(parsedValue);
-  };
-
-  const handleInputStock = ({
-    value,
-    onChange,
-  }: {
-    value: string;
-    onChange: (formattedValue: number) => void;
-  }) => {
-    value = value.replace(/[^0-9]/g, "");
-
-    onChange(value ? parseInt(value) : 0);
   };
 
   return (
@@ -198,34 +185,6 @@ const ProductHandlerDialog = ({
                           type="text"
                           onChange={(e) =>
                             handleInputPrice({
-                              value: e.target.value,
-                              onChange: field.onChange,
-                            })
-                          }
-                        />
-                      </FormControl>
-                      <FormMessage className="text-right" />
-                    </div>
-                  </FormItem>
-                )}
-              />
-
-              <FormField
-                name="stock"
-                control={form.control}
-                render={({ field }) => (
-                  <FormItem className="grid grid-cols-4 items-center gap-4">
-                    <Label htmlFor="stock" className="text-right">
-                      Stock
-                    </Label>
-                    <div className="col-span-3">
-                      <FormControl>
-                        <Input
-                          {...field}
-                          placeholder="Product Stock"
-                          type="text"
-                          onChange={(e) =>
-                            handleInputStock({
                               value: e.target.value,
                               onChange: field.onChange,
                             })

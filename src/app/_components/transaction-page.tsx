@@ -21,6 +21,7 @@ import axios from "axios";
 import { Toaster } from "@/components/ui/toaster";
 import ConfirmationDialog from "@/components/confirmation-dialog";
 import { Input } from "@/components/ui/input";
+import { cn } from "@/lib/utils";
 
 const TransactionPage = ({ activeTab }: { activeTab: string }) => {
   const {
@@ -181,29 +182,45 @@ const TransactionPage = ({ activeTab }: { activeTab: string }) => {
           </TableRow>
         </TableHeader>
         <TableBody>
-          {transactions.map((item) => (
-            <TableRow key={item.id}>
-              <TableCell className="font-medium">{item.sku}</TableCell>
-              <TableCell>{item.qty}</TableCell>
-              <TableCell>${item.amount}</TableCell>
-              <TableCell className="text-right">
-                <div className="flex flex-row-reverse gap-4">
-                  <Button
-                    variant="destructive"
-                    onClick={() => handleDelete({ item: item })}
-                  >
-                    Delete
-                  </Button>
-                  <Button
-                    variant={"secondary"}
-                    onClick={() => handleUpdate({ item: item })}
-                  >
-                    Update
-                  </Button>
-                </div>
-              </TableCell>
-            </TableRow>
-          ))}
+          {transactions.map((item) => {
+            const amount =
+              item.amount < 0
+                ? `-$${item.amount.toString().slice(1)}`
+                : `$${item.amount}`;
+            return (
+              <TableRow
+                key={item.id}
+                className={cn(
+                  "",
+                  item.amount < 0
+                    ? "bg-red-300 hover:bg-red-400"
+                    : item.amount > 0
+                    ? "bg-green-300 hover:bg-green-400"
+                    : "bg-white hover:bg-slate-200"
+                )}
+              >
+                <TableCell className="font-medium">{item.sku}</TableCell>
+                <TableCell>{item.qty}</TableCell>
+                <TableCell>{amount}</TableCell>
+                <TableCell className="text-right">
+                  <div className="flex flex-row-reverse gap-4">
+                    <Button
+                      variant="destructive"
+                      onClick={() => handleDelete({ item: item })}
+                    >
+                      Delete
+                    </Button>
+                    <Button
+                      variant={"secondary"}
+                      onClick={() => handleUpdate({ item: item })}
+                    >
+                      Update
+                    </Button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            );
+          })}
         </TableBody>
         <TableFooter>
           <TableRow>

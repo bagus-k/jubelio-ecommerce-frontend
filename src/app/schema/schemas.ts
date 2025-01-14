@@ -10,7 +10,6 @@ export const productSchema = z.object({
     .number()
     .positive("Price must be greater than zero")
     .min(0.01, "Price must be greater than zero"),
-  stock: z.number().int().nonnegative("Stock must be a non-negative integer"),
 });
 
 export const transactionSchema = z.object({

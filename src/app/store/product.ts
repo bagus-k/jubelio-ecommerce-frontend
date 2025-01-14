@@ -38,15 +38,13 @@ export type ProductHandler = {
     sku,
     image,
     price,
-    stock,
-    destruction,
+    description,
   }: {
     title: string;
     sku: string;
     image: string;
     price: number;
-    stock: number;
-    destruction?: string;
+    description?: string;
   }) => Promise<void>;
   updateProduct: ({
     id,
@@ -54,7 +52,6 @@ export type ProductHandler = {
     sku,
     image,
     price,
-    stock,
     description,
   }: {
     id: number;
@@ -62,7 +59,6 @@ export type ProductHandler = {
     sku: string;
     image: string;
     price: number;
-    stock: number;
     description?: string;
   }) => Promise<void>;
   getDetailProduct: ({ id }: { id: number }) => Promise<void>;
@@ -168,17 +164,17 @@ export const useProductStore = create<ProductHandler>()((set, get) => ({
     }
   },
 
-  addProduct: async ({ title, sku, image, price, stock }) => {
+  addProduct: async ({ title, sku, image, price, description }) => {
     const { getProducts } = get();
     const product = {
       title: title,
       sku: sku,
       image: image,
       price: price,
-      stock: stock,
+      description: description,
     };
     try {
-      await axios.post("http://localhost:8080/api/v1/products", product);
+      await axios.post(`${config.app.api_base_url}/products`, product);
       await getProducts({ page: 1, keyword: "" });
       return;
     } catch (error) {
@@ -187,26 +183,17 @@ export const useProductStore = create<ProductHandler>()((set, get) => ({
     }
   },
 
-  updateProduct: async ({
-    id,
-    title,
-    sku,
-    image,
-    price,
-    stock,
-    description,
-  }) => {
+  updateProduct: async ({ id, title, sku, image, price, description }) => {
     const { getProducts, getDetailProduct, keyword } = get();
     const product = {
       title: title,
       sku: sku,
       image: image,
       price: price,
-      stock: stock,
       description: description,
     };
     try {
-      await axios.put(`http://localhost:8080/api/v1/products/${id}`, product);
+      await axios.put(`${config.app.api_base_url}/products/${id}`, product);
       await getProducts({ page: 1, keyword: keyword });
       await getDetailProduct({ id: id });
       return;
@@ -249,7 +236,7 @@ export const useProductStore = create<ProductHandler>()((set, get) => ({
   deleteProduct: async ({ id }) => {
     const { getProducts, keyword } = get();
     try {
-      await axios.delete(`http://localhost:8080/api/v1/products/${id}`);
+      await axios.delete(`${config.app.api_base_url}/products/${id}`);
       await getProducts({ page: 1, keyword: keyword });
       return;
     } catch (error) {
